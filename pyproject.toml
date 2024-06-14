@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pymonkey"
+version = "0.1.0"
+dependencies = []
+requires-python = ">=3.10"
+authors = [{ name = "Prakhar Nagpal", email = "prakhar.nagpal03@gmail.com" }]
+description = "A compiler for the monkey programming language"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+
+[project.scripts]
+pymonkey = "pymonkey:main"
