@@ -40,6 +40,12 @@ class TokenType(Enum):
     TRUE = "TRUE"
     FALSE = "FALSE"
 
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
 
 KEYWORDS_MAP = {
     "let": TokenType.LET,
