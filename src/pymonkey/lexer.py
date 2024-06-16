@@ -14,6 +14,7 @@ class TokenType(Enum):
     # operators
     ASSIGN = "="
     PLUS = "+"
+    MINUS = "-"
 
     # Delimiters
     COMMA = ","
@@ -26,6 +27,12 @@ class TokenType(Enum):
     # Keywords
     FUNCTION = "FUNCTION"
     LET = "LET"
+
+
+KEYWORDS_MAP = {
+    "let": TokenType.LET,
+    "fn": TokenType.FUNCTION,
+}
 
 
 @dataclass
@@ -43,7 +50,7 @@ class Lexer:
         self.ch = ""
         self.read_char()
 
-    # TODO: only works with ascii text, support unicode
+    # @todo: only works with ascii text, support unicode
     def read_char(self):
         self.ch = (
             self.input[self.read_position]
@@ -55,6 +62,7 @@ class Lexer:
 
     def next_token(self) -> Token:
         token = Token(TokenType.EOF, "")
+        self.skip_whitespace()
         match self.ch:
             case "=":
                 token = Token(TokenType.ASSIGN, "=")
@@ -73,6 +81,37 @@ class Lexer:
             case "}":
                 token = Token(TokenType.RBRACE, "}")
             case _:
-                token = Token(TokenType.EOF, "")
+                if self.ch.isalpha():
+                    literal = self.read_identifier()
+                    token = Token(self.lookup_ident_literal_type(literal), literal)
+                elif self.ch.isdigit():
+                    token = Token(TokenType.INT, self.read_int())
+                else:
+                    token = Token(TokenType.EOF, "")
+                return token
         self.read_char()
         return token
+
+    def read_identifier(self) -> str:
+        start_position = self.position
+        while self.ch.isalpha() or self.ch.isdigit():
+            self.read_char()
+        return self.input[start_position : self.position]
+
+    def lookup_ident_literal_type(self, identifier: str) -> TokenType:
+        return (
+            KEYWORDS_MAP[identifier]
+            if identifier in KEYWORDS_MAP.keys()
+            else TokenType.IDENT
+        )
+
+    def skip_whitespace(self):
+        while self.ch.isspace():
+            self.read_char()
+
+    # @todo: only works with integers, support floats and hexadecimal
+    def read_int(self) -> str:
+        start_position = self.position
+        while self.ch.isdigit():
+            self.read_char()
+        return self.input[start_position : self.position]
