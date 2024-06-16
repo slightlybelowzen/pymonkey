@@ -15,6 +15,13 @@ class TokenType(Enum):
     ASSIGN = "="
     PLUS = "+"
     MINUS = "-"
+    ASTERISK = "*"
+    SLASH = "/"
+    LT = "<"
+    GT = ">"
+    EQUAL_EQ = "=="
+    BANG_EQ = "!="
+    BANG = "!"
 
     # Delimiters
     COMMA = ","
@@ -27,11 +34,21 @@ class TokenType(Enum):
     # Keywords
     FUNCTION = "FUNCTION"
     LET = "LET"
+    RETURN = "RETURN"
+    IF = "IF"
+    ELSE = "ELSE"
+    TRUE = "TRUE"
+    FALSE = "FALSE"
 
 
 KEYWORDS_MAP = {
     "let": TokenType.LET,
     "fn": TokenType.FUNCTION,
+    "return": TokenType.RETURN,
+    "if": TokenType.IF,
+    "else": TokenType.ELSE,
+    "true": TokenType.TRUE,
+    "false": TokenType.FALSE,
 }
 
 
@@ -68,10 +85,22 @@ class Lexer:
                 token = Token(TokenType.ASSIGN, "=")
             case "+":
                 token = Token(TokenType.PLUS, "+")
-            case ",":
-                token = Token(TokenType.COMMA, ",")
+            case "-":
+                token = Token(TokenType.MINUS, "-")
+            case "!":
+                token = Token(TokenType.BANG, "!")
+            case "/":
+                token = Token(TokenType.SLASH, "/")
+            case "*":
+                token = Token(TokenType.ASTERISK, "*")
+            case "<":
+                token = Token(TokenType.LT, "<")
+            case ">":
+                token = Token(TokenType.GT, ">")
             case ";":
                 token = Token(TokenType.SEMICOLON, ";")
+            case ",":
+                token = Token(TokenType.COMMA, ",")
             case "(":
                 token = Token(TokenType.LPAREN, "(")
             case ")":
