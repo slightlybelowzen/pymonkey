@@ -35,7 +35,7 @@ class Expression(Node):
 class Program(Node):
     """Represents a program. Root node of the AST. Contains a list of statements."""
 
-    def __init__(self, statements: list[Statement]):
+    def __init__(self, statements: list[Statement] = []):
         self.statements = statements
 
     def token_literal(self) -> str:

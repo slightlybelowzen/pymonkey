@@ -22,7 +22,7 @@ class Parser:
 
     def parse_program(self):
         """Parses a program and returns an AST of type Program."""
-        program = Program([])
+        program = Program()
         while self.current_token.token_type != TokenType.EOF:
             statement = self.parse_statement()
             if statement:
@@ -51,14 +51,14 @@ class Parser:
         # the next token should be '=
         if not self.expect_peek_token(TokenType.ASSIGN):
             return None
-        # skip the expression until the next semicolon for now
+        # skip the expression until the next semicolon for now (ignore the expression on the RHS of =)
         while self.current_token.token_type != TokenType.SEMICOLON:
             self.next_token()
         return statement
 
-    def expect_peek_token(self, token_type: TokenType) -> bool:
+    def expect_peek_token(self, expected_token_type: TokenType) -> bool:
         """Checks if the next token is of the given type and if so, consumes it."""
-        if self.peek_token.token_type == token_type:
+        if self.peek_token.token_type == expected_token_type:
             self.next_token()
             return True
         return False
