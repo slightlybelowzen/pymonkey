@@ -67,28 +67,26 @@ class Lexer:
         self.ch = ""
         self.read_char()
 
-    # @todo: only works with ascii text, support unicode
-    def read_char(self):
-        self.ch = (
-            self.input[self.read_position]
-            if self.read_position < self.input_len
-            else ""
-        )
-        self.position = self.read_position
-        self.read_position += 1
-
     def next_token(self) -> Token:
         token = Token(TokenType.EOF, "")
         self.skip_whitespace()
         match self.ch:
             case "=":
-                token = Token(TokenType.ASSIGN, "=")
+                if self.peek_char() == "=":
+                    self.read_char()
+                    token = Token(TokenType.EQUAL_EQ, "==")
+                else:
+                    token = Token(TokenType.ASSIGN, "=")
             case "+":
                 token = Token(TokenType.PLUS, "+")
             case "-":
                 token = Token(TokenType.MINUS, "-")
             case "!":
-                token = Token(TokenType.BANG, "!")
+                if self.peek_char() == "=":
+                    self.read_char()
+                    token = Token(TokenType.BANG_EQ, "!=")
+                else:
+                    token = Token(TokenType.BANG, "!")
             case "/":
                 token = Token(TokenType.SLASH, "/")
             case "*":
@@ -121,6 +119,16 @@ class Lexer:
         self.read_char()
         return token
 
+    # @todo: only works with ascii text, support unicode
+    def read_char(self):
+        self.ch = (
+            self.input[self.read_position]
+            if self.read_position < self.input_len
+            else ""
+        )
+        self.position = self.read_position
+        self.read_position += 1
+
     def read_identifier(self) -> str:
         start_position = self.position
         while self.ch.isalpha() or self.ch.isdigit():
@@ -144,3 +152,10 @@ class Lexer:
         while self.ch.isdigit():
             self.read_char()
         return self.input[start_position : self.position]
+
+    def peek_char(self) -> str:
+        return (
+            ""
+            if self.read_position >= self.input_len
+            else self.input[self.read_position]
+        )
