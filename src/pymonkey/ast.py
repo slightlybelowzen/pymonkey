@@ -1,7 +1,10 @@
+from typing import Optional
 from pymonkey.lexer import Token
 
 
 class Node:
+    """Base class for all AST nodes. Contains methods for debugging the value of the node token literal."""
+
     def __init__(self):
         raise NotImplementedError
 
@@ -10,6 +13,8 @@ class Node:
 
 
 class Statement(Node):
+    """Base class for all statement nodes."""
+
     def __init__(self):
         super().__init__()
 
@@ -18,6 +23,8 @@ class Statement(Node):
 
 
 class Expression(Node):
+    """Base class for all expression nodes."""
+
     def __init__(self):
         super().__init__()
 
@@ -26,6 +33,8 @@ class Expression(Node):
 
 
 class Program(Node):
+    """Represents a program. Root node of the AST. Contains a list of statements."""
+
     def __init__(self, statements: list[Statement]):
         self.statements = statements
 
@@ -34,6 +43,8 @@ class Program(Node):
 
 
 class Identifier(Expression):
+    """Represents an identifier node in the program. Contains the token and the value of the identifier."""
+
     def __init__(self, token: Token, value: str):
         self.token = token
         self.value = value
@@ -46,7 +57,14 @@ class Identifier(Expression):
 
 
 class LetStatement(Statement):
-    def __init__(self, token: Token, identifier: Identifier, value: Expression):
+    """Represents a node for a let statement in the program. Contains the token representing let, an identifier node and the expression value."""
+
+    def __init__(
+        self,
+        token: Token,
+        identifier: Optional[Identifier] = None,
+        value: Optional[Expression] = None,
+    ):
         self.token = token
         self.identifier = identifier
         self.value = value
