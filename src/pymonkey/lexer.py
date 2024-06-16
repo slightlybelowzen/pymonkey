@@ -71,6 +71,9 @@ class Lexer:
         self.position = 0
         self.read_position = 0
         self.ch = ""
+
+        # this is a hack to get the first token and set the fields as required
+        # @todo: find a better way to do this
         self.read_char()
 
     def next_token(self) -> Token:
