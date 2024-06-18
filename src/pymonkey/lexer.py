@@ -41,10 +41,10 @@ class TokenType(Enum):
     FALSE = "FALSE"
 
     def __str__(self):
-        return self.value
+        return self.name
 
     def __repr__(self):
-        return self.value
+        return self.name
 
 
 KEYWORDS_MAP = {
@@ -118,8 +118,6 @@ class Lexer:
                 token = Token(TokenType.LBRACE, "{", self.line)
             case "}":
                 token = Token(TokenType.RBRACE, "}", self.line)
-            case "\n":
-                self.line += 1
             case _:
                 if self.ch.isalpha():
                     literal = self.read_identifier()
@@ -161,6 +159,8 @@ class Lexer:
 
     def skip_whitespace(self):
         while self.ch.isspace():
+            if self.ch == "\n":
+                self.line += 1
             self.read_char()
 
     # @todo: only works with integers, support floats and hexadecimal
