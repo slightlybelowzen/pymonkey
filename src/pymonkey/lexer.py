@@ -62,6 +62,7 @@ KEYWORDS_MAP = {
 class Token:
     token_type: TokenType
     literal: Optional[str]
+    line: int
 
 
 class Lexer:
@@ -70,6 +71,7 @@ class Lexer:
         self.input = input
         self.position = 0
         self.read_position = 0
+        self.line = 1
         self.ch = ""
 
         # this is a hack to get the first token and set the fields as required
@@ -77,53 +79,59 @@ class Lexer:
         self.read_char()
 
     def next_token(self) -> Token:
-        token = Token(TokenType.EOF, "")
+        token = Token(TokenType.EOF, "", self.line)
         self.skip_whitespace()
         match self.ch:
             case "=":
                 if self.peek_char() == "=":
                     self.read_char()
-                    token = Token(TokenType.EQUAL_EQ, "==")
+                    token = Token(TokenType.EQUAL_EQ, "==", self.line)
                 else:
-                    token = Token(TokenType.ASSIGN, "=")
+                    token = Token(TokenType.ASSIGN, "=", self.line)
             case "+":
-                token = Token(TokenType.PLUS, "+")
+                token = Token(TokenType.PLUS, "+", self.line)
             case "-":
-                token = Token(TokenType.MINUS, "-")
+                token = Token(TokenType.MINUS, "-", self.line)
             case "!":
                 if self.peek_char() == "=":
                     self.read_char()
-                    token = Token(TokenType.BANG_EQ, "!=")
+                    token = Token(TokenType.BANG_EQ, "!=", self.line)
                 else:
-                    token = Token(TokenType.BANG, "!")
+                    token = Token(TokenType.BANG, "!", self.line)
             case "/":
-                token = Token(TokenType.SLASH, "/")
+                token = Token(TokenType.SLASH, "/", self.line)
             case "*":
-                token = Token(TokenType.ASTERISK, "*")
+                token = Token(TokenType.ASTERISK, "*", self.line)
             case "<":
-                token = Token(TokenType.LT, "<")
+                token = Token(TokenType.LT, "<", self.line)
             case ">":
-                token = Token(TokenType.GT, ">")
+                token = Token(TokenType.GT, ">", self.line)
             case ";":
-                token = Token(TokenType.SEMICOLON, ";")
+                token = Token(TokenType.SEMICOLON, ";", self.line)
             case ",":
-                token = Token(TokenType.COMMA, ",")
+                token = Token(TokenType.COMMA, ",", self.line)
             case "(":
-                token = Token(TokenType.LPAREN, "(")
+                token = Token(TokenType.LPAREN, "(", self.line)
             case ")":
-                token = Token(TokenType.RPAREN, ")")
+                token = Token(TokenType.RPAREN, ")", self.line)
             case "{":
-                token = Token(TokenType.LBRACE, "{")
+                token = Token(TokenType.LBRACE, "{", self.line)
             case "}":
-                token = Token(TokenType.RBRACE, "}")
+                token = Token(TokenType.RBRACE, "}", self.line)
+            case "\n":
+                self.line += 1
             case _:
                 if self.ch.isalpha():
                     literal = self.read_identifier()
-                    token = Token(self.lookup_ident_literal_type(literal), literal)
+                    token = Token(
+                        self.lookup_ident_literal_type(literal),
+                        literal,
+                        self.line,
+                    )
                 elif self.ch.isdigit():
-                    token = Token(TokenType.INT, self.read_int())
+                    token = Token(TokenType.INT, self.read_int(), self.line)
                 else:
-                    token = Token(TokenType.EOF, "")
+                    token = Token(TokenType.EOF, "", self.line)
                 return token
         self.read_char()
         return token

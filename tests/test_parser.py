@@ -17,12 +17,10 @@ let foobar = 838838;""",
     ],
     ids=["simple-let-statements"],
 )
-def test_parse_let_statement(input: str, expected: list[str]):
+def test_parse_let_statement_identifiers(input: str, expected: list[str]):
     lexer = Lexer(input)
     parser = Parser(lexer)
     program = parser.parse_program()
-    if not program:
-        raise Exception("AST is empty")
     assert len(program.statements) == 3
     for i, expected_identifier in enumerate(expected):
         statement = program.statements[i]

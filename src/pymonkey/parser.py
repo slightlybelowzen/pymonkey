@@ -20,7 +20,7 @@ class Parser:
         self.current_token = self.peek_token
         self.peek_token = self.lexer.next_token()
 
-    def parse_program(self):
+    def parse_program(self) -> Program:
         """Parses a program and returns an AST of type Program."""
         program = Program()
         while self.current_token.token_type != TokenType.EOF:
