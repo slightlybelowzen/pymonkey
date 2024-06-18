@@ -10,6 +10,7 @@ class Parser:
         self.lexer = lexer
         self.current_token: Token = None
         self.peek_token: Token = None
+        self.errors: list[str] = []
 
         # another hack to get the current and peek token set
         self.next_token()
@@ -28,6 +29,10 @@ class Parser:
             if statement:
                 program.statements.append(statement)
             self.next_token()
+        if self.errors:
+            for error in self.errors:
+                print(error)
+            raise Exception("Could not parse program")
         return program
 
     def parse_statement(self) -> Optional[Statement]:
@@ -44,13 +49,17 @@ class Parser:
         statement = LetStatement(token=self.current_token)
         # the next token should be an identifier
         if not self.expect_peek_token(TokenType.IDENT):
-            return None
+            self.errors.append(
+                f"line {self.current_token.line}: expected next token to be {TokenType.IDENT.value}, got {self.peek_token.literal} instead"
+            )
         statement.identifier = Identifier(
             token=self.current_token, value=self.current_token.literal
         )
         # the next token should be '=
         if not self.expect_peek_token(TokenType.ASSIGN):
-            return None
+            self.errors.append(
+                f"line {self.current_token.line}: expected next token to be {TokenType.ASSIGN.value}, got {self.peek_token.literal} instead"
+            )
         # skip the expression until the next semicolon for now (ignore the expression on the RHS of =)
         while self.current_token.token_type != TokenType.SEMICOLON:
             self.next_token()
