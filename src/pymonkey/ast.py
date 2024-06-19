@@ -74,3 +74,17 @@ class LetStatement(Statement):
 
     def statement_node():
         raise NotImplementedError
+
+
+class ReturnStatement(Statement):
+    """Represents a node for a return statement in the program. Contains the token representing return, and an expression value."""
+
+    def __init__(self, token: Token, value: Optional[Expression] = None):
+        self.token = token
+        self.value = value
+
+    def token_literal(self) -> str:
+        return self.token.literal
+
+    def statement_node():
+        raise NotImplementedError
