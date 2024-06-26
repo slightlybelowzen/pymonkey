@@ -33,11 +33,9 @@ def test_parse_let_statement_identifiers(input: str, expected: list[str]):
 @pytest.mark.parametrize(
     "input",
     [
-        (
-            """return 5;
+        """return 5;
 return 10;
 return 838838;""",
-        ),
     ],
     ids=["simple-return-statements"],
 )

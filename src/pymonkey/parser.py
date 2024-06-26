@@ -1,5 +1,5 @@
 from typing import Optional
-from pymonkey.ast import Identifier, LetStatement, Program, Statement
+from pymonkey.ast import Identifier, LetStatement, Program, ReturnStatement, Statement
 from pymonkey.lexer import Lexer, Token, TokenType
 
 
@@ -23,7 +23,7 @@ class Parser:
 
     def parse_program(self) -> Program:
         """Parses a program and returns an AST of type Program."""
-        program = Program()
+        program = Program([])
         while self.current_token.token_type != TokenType.EOF:
             statement = self.parse_statement()
             if statement:
@@ -40,12 +40,13 @@ class Parser:
         match self.current_token.token_type:
             case TokenType.LET:
                 return self.parse_let_statement()
+            case TokenType.RETURN:
+                return self.parse_return_statement()
             case _:
                 return None
 
     def parse_let_statement(self) -> Optional[LetStatement]:
-        """Parses a let statement and returns a LetStatement object."""
-        # statement should look like let <identifier> = <value>
+        """Parses a let statement and returns a LetStatement object. Of the form, let <identifier> = <value>"""
         statement = LetStatement(token=self.current_token)
         # the next token should be an identifier
         if not self.expect_peek_token(TokenType.IDENT):
@@ -61,6 +62,14 @@ class Parser:
                 f"line {self.current_token.line}: expected next token to be {TokenType.ASSIGN.value}, got {self.peek_token.literal} instead"
             )
         # skip the expression until the next semicolon for now (ignore the expression on the RHS of =)
+        while self.current_token.token_type != TokenType.SEMICOLON:
+            self.next_token()
+        return statement
+
+    def parse_return_statement(self) -> Optional[ReturnStatement]:
+        """Parses a return statement and returns a ReturnStatement object. Of the form, return <expression>"""
+        statement = ReturnStatement(token=self.current_token)
+        self.next_token()
         while self.current_token.token_type != TokenType.SEMICOLON:
             self.next_token()
         return statement
