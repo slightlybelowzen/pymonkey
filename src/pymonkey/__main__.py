@@ -7,8 +7,7 @@ def main():
     print(f"monkey v{VERSION}")
     while True:
         try:
-            print(">> ", end="")
-            code = input()
+            code = input(">> ")
             lexer = Lexer(code)
             parser = Parser(lexer)
             program = parser.parse_program()
