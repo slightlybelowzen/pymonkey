@@ -56,7 +56,7 @@ class Parser:
         statement.identifier = Identifier(
             token=self.current_token, value=self.current_token.literal
         )
-        # the next token should be '=
+        # the next token should be '='
         if not self.expect_peek_token(TokenType.ASSIGN):
             self.errors.append(
                 f"line {self.current_token.line}: expected next token to be {TokenType.ASSIGN.value}, got {self.peek_token.literal} instead"
