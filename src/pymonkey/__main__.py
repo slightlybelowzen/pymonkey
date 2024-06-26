@@ -1,4 +1,5 @@
-from pymonkey.lexer import Lexer, TokenType
+from pymonkey.lexer import Lexer
+from pymonkey.parser import Parser
 from pymonkey.version import VERSION
 
 
@@ -9,11 +10,10 @@ def main():
             print(">> ", end="")
             code = input()
             lexer = Lexer(code)
-            while True:
-                token = lexer.next_token()
-                if token.token_type == TokenType.EOF:
-                    break
-                print(token)
+            parser = Parser(lexer)
+            program = parser.parse_program()
+            for statement in program.statements:
+                print(statement.__dict__)
         except KeyboardInterrupt:
             print("")
             break
