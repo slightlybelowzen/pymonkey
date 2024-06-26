@@ -41,6 +41,9 @@ class Program(Node):
     def token_literal(self) -> str:
         return "" if len(self.statements) == 0 else self.statements[0].token_literal()
 
+    def __repr__(self) -> str:
+        return self.statements.__repr__()
+
 
 class Identifier(Expression):
     """Represents an identifier node in the program. Contains the token and the value of the identifier."""
@@ -54,6 +57,9 @@ class Identifier(Expression):
 
     def expression_node():
         raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"{self.value}"
 
 
 class LetStatement(Statement):
@@ -75,6 +81,9 @@ class LetStatement(Statement):
     def statement_node():
         raise NotImplementedError
 
+    def __repr__(self) -> str:
+        return f"{self.token_literal()} {self.identifier} = {self.value};"
+
 
 class ReturnStatement(Statement):
     """Represents a node for a return statement in the program. Contains the token representing return, and an expression value."""
@@ -88,3 +97,23 @@ class ReturnStatement(Statement):
 
     def statement_node():
         raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"{self.token_literal()} {self.value};"
+
+
+class ExpressionStatement(Statement):
+    """Represents a node for an expression statement in the program. Contains the token representing return, and an expression value."""
+
+    def __init__(self, token: Token, expression: Optional[Expression] = None):
+        self.token = token
+        self.expression = expression
+
+    def token_literal(self) -> str:
+        return self.token.literal
+
+    def statement_node():
+        raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"{self.token_literal()} {self.expression};"

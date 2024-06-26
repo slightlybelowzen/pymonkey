@@ -12,7 +12,7 @@ def main():
             parser = Parser(lexer)
             program = parser.parse_program()
             for statement in program.statements:
-                print(statement.__dict__)
+                print(statement)
         except KeyboardInterrupt:
             print("")
             break
