@@ -9,7 +9,7 @@ class TokenType(Enum):
     EOF = "EOF"
 
     # identifiers, literals
-    IDENT = "IDENT" 
+    IDENT = "IDENT"
     INT = "INT"
 
     # operators
@@ -28,6 +28,8 @@ class TokenType(Enum):
     FUNCTION = "FUNCTION"
     LET = "LET"
 
+    def __repr__(self) -> str:
+        return f"TokenType.{self.name}"
 
     @staticmethod
     def lookup_identifier(identifier: str) -> TokenType:
@@ -52,7 +54,7 @@ class Lexer:
         self.input: str = input
         self.position: int = position
         self.character: str | None = character
-    
+
     def __repr__(self) -> str:
         return f"Lexer(\n  position={self.position},\n  character={self.character!r}\n)"
 
@@ -63,75 +65,95 @@ class Lexer:
             case None:
                 return self, None
             case ";":
-                return lexer.advance(), Token(type=TokenType.SEMICOLON, literal=";", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.SEMICOLON, literal=";", position=lexer.position
+                )
             case "=":
-                return lexer.advance(), Token(type=TokenType.ASSIGN, literal="=", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.ASSIGN, literal="=", position=lexer.position
+                )
             case "+":
-                return lexer.advance(), Token(type=TokenType.PLUS, literal="+", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.PLUS, literal="+", position=lexer.position
+                )
             case "(":
-                return lexer.advance(), Token(type=TokenType.LPAREN, literal="(", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.LPAREN, literal="(", position=lexer.position
+                )
             case ")":
-                return lexer.advance(), Token(type=TokenType.RPAREN, literal=")", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.RPAREN, literal=")", position=lexer.position
+                )
             case "{":
-                return lexer.advance(), Token(type=TokenType.LBRACE, literal="{", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.LBRACE, literal="{", position=lexer.position
+                )
             case "}":
-                return lexer.advance(), Token(type=TokenType.RBRACE, literal="}", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.RBRACE, literal="}", position=lexer.position
+                )
             case ",":
-                return lexer.advance(), Token(type=TokenType.COMMA, literal=",", position=lexer.position)
+                return lexer.advance(), Token(
+                    type=TokenType.COMMA, literal=",", position=lexer.position
+                )
             case ch if ch.isalpha():
                 return lexer.read_identifier()
             case ch if ch.isdigit():
                 return lexer.read_number()
             case _:
-                return lexer.advance(), Token(type=TokenType.ILLEGAL, literal=lexer.character, position=lexer.position)
-             
+                return lexer.advance(), Token(
+                    type=TokenType.ILLEGAL,
+                    literal=lexer.character,
+                    position=lexer.position,
+                )
+
     def read_while(self, condition: Callable[[str], bool]) -> tuple[Lexer, str]:
         lexer = self
-        print(f"read_while: {lexer}")
         start = lexer.position
         lexer, end = self.seek(condition)
         return lexer, self.input[start:end]
-            
+
     def read_identifier(self) -> tuple[Lexer, Token | None]:
-        print(f"read_identifier: {self}")
+        position = self.position
         lexer, identifier = self.read_while(self.is_identifier)
-        return lexer, Token(type=TokenType.lookup_identifier(identifier), literal=identifier, position=lexer.position)
+        return lexer, Token(
+            type=TokenType.lookup_identifier(identifier),
+            literal=identifier,
+            position=position,
+        )
 
     def read_number(self) -> tuple[Lexer, Token | None]:
+        position = self.position
         lexer, number = self.read_while(self.is_digit)
-        return lexer, Token(type=TokenType.INT, literal=number, position=lexer.position)
+        return lexer, Token(type=TokenType.INT, literal=number, position=position)
 
     def advance(self) -> Lexer:
         if self.position >= len(self.input) - 1:
             return Lexer(self.input, self.position, None)
         pos = self.position + 1
-        return Lexer(self.input, pos, self.input[pos]) 
-    
+        return Lexer(self.input, pos, self.input[pos])
+
     def seek(self, condition: Callable[[str], bool]) -> tuple[Lexer, int]:
         lexer = self
-        print(f"seek: {lexer}")
-        if lexer.character is None:
-            return lexer, lexer.position
         while condition(lexer.character):
             lexer = lexer.advance()
+            if lexer.character is None:
+                # not sure about this, should it always be +1?
+                return lexer, lexer.position + 1
         return lexer, lexer.position
 
     def skip_whitespace(self) -> Lexer:
         lexer, _ = self.seek(self.is_whitespace)
         return lexer
-     
+
     def is_alpha(self, ch: str) -> bool:
-        print(f"is_alpha: {ch}")
         return ch.isalpha()
 
     def is_digit(self, ch: str) -> bool:
-        print(f"is_digit: {ch}")
         return ch.isdigit()
-    
+
     def is_whitespace(self, ch: str) -> bool:
-        print(f"is_whitespace: {ch}")
         return ch.isspace()
-    
+
     def is_identifier(self, ch: str) -> bool:
-        print(f"is_identifier: {ch}")
         return ch.isalpha() or ch == "_"
