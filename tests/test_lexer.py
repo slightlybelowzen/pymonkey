@@ -1,3 +1,4 @@
+import pprint
 import pytest
 from src.lexer import Lexer, Token, TokenType
 
@@ -11,7 +12,7 @@ def input_to_tokens(input: str) -> list[Token]:
                 return tokens
             case lexer, token:
                 tokens.append(token)
-    print(tokens)
+    pprint.pprint(tokens)
     return tokens
 
 

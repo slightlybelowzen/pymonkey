@@ -183,8 +183,7 @@ class Lexer:
         return lexer, Token(type=TokenType.STRING, literal=string, position=position)
 
     def read_while(self, condition: Callable[[str], bool]) -> tuple[Lexer, str]:
-        lexer = self
-        start = lexer.position
+        start = self.position
         lexer, end = self.seek(condition)
         return lexer, self.input[start:end]
 
@@ -213,6 +212,7 @@ class Lexer:
         while condition(lexer.character):
             lexer = lexer.advance()
             if lexer.character is None:
+                # means we've reached the end of the input
                 # not sure about this, should it always be +1?
                 return lexer, lexer.position + 1
         return lexer, lexer.position
