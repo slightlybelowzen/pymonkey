@@ -38,7 +38,6 @@ def test_single_character_tokens():
     ]
 
 
-# @pytest.mark.skip(reason="Not implemented")
 def test_monkey_program():
     input = """let five = 5;
 let ten = 10;
@@ -83,4 +82,59 @@ let result = add(five, ten);"""
         Token(type=TokenType.IDENT, literal="ten", position=82),
         Token(type=TokenType.RPAREN, literal=")", position=85),
         Token(type=TokenType.SEMICOLON, literal=";", position=86),
+    ]
+
+
+def test_operators():
+    assert input_to_tokens("!-/*5; 5 < 10 > 5;") == [
+        Token(type=TokenType.BANG, literal="!", position=0),
+        Token(type=TokenType.MINUS, literal="-", position=1),
+        Token(type=TokenType.SLASH, literal="/", position=2),
+        Token(type=TokenType.ASTERISK, literal="*", position=3),
+        Token(type=TokenType.INT, literal="5", position=4),
+        Token(type=TokenType.SEMICOLON, literal=";", position=5),
+        Token(type=TokenType.INT, literal="5", position=7),
+        Token(type=TokenType.LT, literal="<", position=9),
+        Token(type=TokenType.INT, literal="10", position=11),
+        Token(type=TokenType.GT, literal=">", position=14),
+        Token(type=TokenType.INT, literal="5", position=16),
+        Token(type=TokenType.SEMICOLON, literal=";", position=17),
+    ]
+
+
+def test_if_statements():
+    input = "if (5 < 10) { return true; } else { return false; }"
+    assert input_to_tokens(input) == [
+        Token(type=TokenType.IF, literal="if", position=0),
+        Token(type=TokenType.LPAREN, literal="(", position=3),
+        Token(type=TokenType.INT, literal="5", position=4),
+        Token(type=TokenType.LT, literal="<", position=6),
+        Token(type=TokenType.INT, literal="10", position=8),
+        Token(type=TokenType.RPAREN, literal=")", position=10),
+        Token(type=TokenType.LBRACE, literal="{", position=12),
+        Token(type=TokenType.RETURN, literal="return", position=14),
+        Token(type=TokenType.TRUE, literal="true", position=21),
+        Token(type=TokenType.SEMICOLON, literal=";", position=25),
+        Token(type=TokenType.RBRACE, literal="}", position=27),
+        Token(type=TokenType.ELSE, literal="else", position=29),
+        Token(type=TokenType.LBRACE, literal="{", position=34),
+        Token(type=TokenType.RETURN, literal="return", position=36),
+        Token(type=TokenType.FALSE, literal="false", position=43),
+        Token(type=TokenType.SEMICOLON, literal=";", position=48),
+        Token(type=TokenType.RBRACE, literal="}", position=50),
+    ]
+
+
+def test_string_literals():
+    assert input_to_tokens('"hello" "world"') == [
+        Token(type=TokenType.STRING, literal="hello", position=0),
+        Token(type=TokenType.STRING, literal="world", position=8),
+    ]
+
+
+def test_equality_operators():
+    assert input_to_tokens("5 != 5") == [
+        Token(type=TokenType.INT, literal="5", position=0),
+        Token(type=TokenType.NOT_EQ, literal="!=", position=2),
+        Token(type=TokenType.INT, literal="5", position=5),
     ]
