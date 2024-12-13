@@ -5,6 +5,7 @@ def main():
     file = args[0]
     with open(file, "r") as f:
         content = f.read()
+    print(content.strip())
 
 
 if __name__ == "__main__":

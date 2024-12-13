@@ -1,17 +1,14 @@
 import pprint
-import pytest
 from src.lexer import Lexer, Token, TokenType
 
 
 def input_to_tokens(input: str) -> list[Token]:
-    lexer = Lexer(input, position=0, character=input[0] if len(input) > 0 else None)
-    tokens = []
-    while lexer.character is not None:
-        match lexer.next_token():
-            case _, None:
-                return tokens
-            case lexer, token:
-                tokens.append(token)
+    lexer = Lexer(input)
+    tokens: list[Token] = []
+    next_token = lexer.next_token()
+    while next_token.type != TokenType.EOF:
+        tokens.append(next_token)
+        next_token = lexer.next_token()
     pprint.pprint(tokens)
     return tokens
 
