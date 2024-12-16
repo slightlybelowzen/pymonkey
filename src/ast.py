@@ -73,3 +73,15 @@ class ReturnStatement(Statement):
     @override
     def statement_node(self):
         pass
+
+    def __str__(self) -> str:
+        return f"ReturnStatement(return_value={self.return_value})"
+
+
+@dataclass
+class ExpressionStatement(Statement):
+    expression: Expression = None
+
+    @override
+    def statement_node(self):
+        pass
