@@ -4,6 +4,7 @@ from enum import Enum
 from src.ast import (
     ExpressionStatement,
     Identifier,
+    IntegerLiteral,
     LetStatement,
     Program,
     ReturnStatement,
@@ -36,6 +37,7 @@ class Parser:
         self.peek_token: Token | None = None
         self.prefix_parse_fns: dict[TokenType, Callable[[], Expression]] = {
             TokenType.IDENT: self.parse_identifier,
+            TokenType.INT: self.parse_integet_literal,
         }
         self.infix_parse_fns: dict[TokenType, Callable[[Expression], Expression]] = {}
         self._post_init()
@@ -94,6 +96,17 @@ class Parser:
         assert self.current_token is not None
         node = Identifier(token=self.current_token, value=self.current_token.literal)
         return node
+
+    def parse_integet_literal(self) -> Expression:
+        assert self.current_token is not None
+        try:
+            value = int(self.current_token.literal)
+        except ValueError:
+            raise ParserError(
+                f"line {self.current_token.line}, col: {self.current_token.position}: could not parse {self.current_token.literal} as an integer"
+            )
+        literal = IntegerLiteral(token=self.current_token, value=value)
+        return literal
 
     def parse_return_statement(self) -> ReturnStatement:
         statement = ReturnStatement(self.current_token)

@@ -92,3 +92,15 @@ class ExpressionStatement(Statement):
 
     def __str__(self) -> str:
         return f"ExpressionStatement(expression={self.expression})"
+
+
+@dataclass
+class IntegerLiteral(Expression):
+    value: int
+
+    @override
+    def expression_node(self):
+        return self
+
+    def __str__(self) -> str:
+        return f"IntegerLiteral(value={self.value.__repr__()})"

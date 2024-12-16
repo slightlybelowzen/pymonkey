@@ -3,6 +3,7 @@ from src.parser import ParserError
 from src.ast import (
     ExpressionStatement,
     Identifier,
+    IntegerLiteral,
     LetStatement,
     Program,
     ReturnStatement,
@@ -46,6 +47,15 @@ def check_identifier_statements(ast: Program, expected_identifiers: list[str]) -
         assert isinstance(statement, ExpressionStatement)
         assert isinstance(statement.expression, Identifier)
         assert statement.expression.value == expected_identifiers[i]
+    return True
+
+
+def check_integer_literal_statements(ast: Program, expected_values: list[str]) -> bool:
+    assert len(ast.statements) == len(expected_values)
+    for i, statement in enumerate(ast.statements):
+        assert isinstance(statement, ExpressionStatement)
+        assert isinstance(statement.expression, IntegerLiteral)
+        assert statement.expression.value == int(expected_values[i])
     return True
 
 
@@ -102,3 +112,20 @@ def test_identifier_expressions(
     with expectation:
         ast = input_to_ast(input)
         assert check_identifier_statements(ast, expected_identifiers)
+
+
+@pytest.mark.parametrize(
+    "input, expected_values, expectation",
+    [
+        ("5;", ["5"], does_not_raise()),
+        ("10;", ["10"], does_not_raise()),
+    ],
+)
+def test_integer_literal_expressions(
+    input: str,
+    expected_values: list[str],
+    expectation,  # type: ignore
+):
+    with expectation:
+        ast = input_to_ast(input)
+        assert check_integer_literal_statements(ast, expected_values)
