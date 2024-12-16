@@ -8,3 +8,8 @@ dependencies = [
     "pytest>=8.3.4",
     "ruff>=0.8.2",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0.1",
+]
