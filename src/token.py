@@ -64,8 +64,10 @@ class TokenType(Enum):
             case _:
                 return TokenType.IDENT
 
+
 @dataclass
 class Token:
     type: TokenType
     literal: str | None = None
     position: int = 0
+    line: int = 0

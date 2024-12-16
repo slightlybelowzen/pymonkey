@@ -3,13 +3,20 @@ from src.lexer import Lexer
 from src.token import Token, TokenType
 
 
+class ParserError(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
+
+
 class Parser:
     def __init__(self, lexer: Lexer):
         self.lexer = lexer
         self.current_token: Token | None = None
         self.peek_token: Token | None = None
+        self.errors: list[str] = []
         self._post_init()
-    
+
     def _post_init(self):
         self.next_token()
         self.next_token()
@@ -17,7 +24,7 @@ class Parser:
     def next_token(self):
         self.current_token = self.peek_token
         self.peek_token = self.lexer.next_token()
-    
+
     def parse_program(self) -> Program:
         program = Program()
         # to satisfy pyright, and also a good sanity check to have
@@ -38,7 +45,7 @@ class Parser:
                 return self.parse_let_statement()
             case _:
                 return None
-    
+
     def parse_let_statement(self) -> LetStatement:
         statement = LetStatement(self.current_token)
         if not self.expect_peek(TokenType.IDENT):
@@ -51,11 +58,13 @@ class Parser:
         while not self.current_token.type == TokenType.SEMICOLON:
             self.next_token()
         return statement
-    
+
     def expect_peek(self, token_type: TokenType) -> bool:
         # same thing as above
         assert self.peek_token is not None
-        if self.peek_token.type == token_type:
-            self.next_token()
-            return True
-        return False
+        if self.peek_token.type != token_type:
+            raise ParserError(
+                f"line {self.peek_token.line}, col: {self.peek_token.position}: expected {token_type}, got {self.peek_token.type} instead"
+            )
+        self.next_token()
+        return True

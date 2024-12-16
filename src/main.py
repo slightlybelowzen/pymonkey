@@ -4,10 +4,12 @@ from src.ast import Program
 from src.lexer import Lexer
 from src.parser import Parser
 
+
 def get_ast(content: str) -> Program:
     lexer = Lexer(content)
     parser = Parser(lexer)
     return parser.parse_program()
+
 
 def run_interpreter():
     print("Pymonkey 0.1.0")
@@ -35,4 +37,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from typing import override
 
 from src.token import Token
 
@@ -10,9 +11,9 @@ class Node(ABC):
 
     def token_literal(self) -> str:
         return self.token.literal
-    
+
     def __str__(self) -> str:
-        return f"Node(literal={self.token.literal.__repr__()}, type={self.token.type.value}, position={self.token.position})"
+        return f"Node(literal={self.token.literal.__repr__()}, type={self.token.type.value}, position={self.token.position}, line={self.token.line})"
 
 
 @dataclass
@@ -21,11 +22,13 @@ class Statement(Node):
     def statement_node(self):
         pass
 
+
 @dataclass
 class Expression(Node):
     @abstractmethod
     def expression_node(self):
         pass
+
 
 @dataclass
 class Program:
@@ -33,26 +36,40 @@ class Program:
 
     def token_literal(self) -> str:
         return self.__repr__()
-    
+
     def __str__(self) -> str:
-        return f"Program(" \
-            f"\n  {'\n  '.join(str(statement) for statement in self.statements)}" \
+        return (
+            f"Program("
+            f"\n  {'\n  '.join(str(statement) for statement in self.statements)}"
             f"\n)"
+        )
+
 
 @dataclass
 class Identifier(Expression):
     value: str
 
     def expression_node(self):
-        return self    
+        return self
+
 
 @dataclass
 class LetStatement(Statement):
     name: Identifier = None
     value: Expression = None
 
+    @override
     def statement_node(self):
         pass
 
     def __str__(self) -> str:
         return f"LetStatement(name={self.name}, value={self.value})"
+
+
+@dataclass
+class ReturnStatement(Statement):
+    return_value: Expression = None
+
+    @override
+    def statement_node(self):
+        pass
