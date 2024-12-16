@@ -1,22 +1,21 @@
 import sys
 
+from src.ast import Program
 from src.lexer import Lexer
-from src.token import TokenType
+from src.parser import Parser
 
-def get_tokens(content: str):
+def get_ast(content: str) -> Program:
     lexer = Lexer(content)
-    token = lexer.next_token()
-    while token.type != TokenType.EOF:
-        yield token
-        token = lexer.next_token()
+    parser = Parser(lexer)
+    return parser.parse_program()
 
 def run_interpreter():
     print("Pymonkey 0.1.0")
     while True:
         try:
             content = input(">>> ")
-            for token in get_tokens(content):
-                print(token)
+            program = get_ast(content)
+            print(program)
         except KeyboardInterrupt:
             print("KeyboardInterrupt")
         except EOFError:
@@ -30,8 +29,8 @@ def main():
     file = args[0]
     with open(file, "r") as f:
         content = f.read()
-    for token in get_tokens(content):
-        print(token)
+    program = get_ast(content)
+    print(program)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from src.token import Token
 
@@ -10,6 +10,9 @@ class Node(ABC):
 
     def token_literal(self) -> str:
         return self.token.literal
+    
+    def __str__(self) -> str:
+        return f"Node(literal={self.token.literal.__repr__()}, type={self.token.type.value}, position={self.token.position})"
 
 
 @dataclass
@@ -24,20 +27,24 @@ class Expression(Node):
     def expression_node(self):
         pass
 
+@dataclass
 class Program:
-    def __init__(self):
-        self.statements: list[Statement] = []
+    statements: list[Statement] = field(default_factory=list)
 
     def token_literal(self) -> str:
-        return self.statements[0].token_literal() if self.statements else ""
+        return self.__repr__()
+    
+    def __str__(self) -> str:
+        return f"Program(" \
+            f"\n  {'\n  '.join(str(statement) for statement in self.statements)}" \
+            f"\n)"
 
 @dataclass
 class Identifier(Expression):
     value: str
 
     def expression_node(self):
-        return self
-
+        return self    
 
 @dataclass
 class LetStatement(Statement):
@@ -46,3 +53,6 @@ class LetStatement(Statement):
 
     def statement_node(self):
         pass
+
+    def __str__(self) -> str:
+        return f"LetStatement(name={self.name}, value={self.value})"
