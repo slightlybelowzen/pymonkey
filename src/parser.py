@@ -1,4 +1,4 @@
-from src.ast import Identifier, LetStatement, Program, Statement
+from src.ast import Identifier, LetStatement, Program, ReturnStatement, Statement
 from src.lexer import Lexer
 from src.token import Token, TokenType
 
@@ -43,8 +43,22 @@ class Parser:
         match self.current_token.type:
             case TokenType.LET:
                 return self.parse_let_statement()
+            case TokenType.RETURN:
+                return self.parse_return_statement()
             case _:
                 return None
+
+    def parse_return_statement(self) -> ReturnStatement:
+        statement = ReturnStatement(self.current_token)
+        self.next_token()
+
+        # This check is really annoying, is there a way to avoid it everywhere
+        assert self.current_token is not None
+        # TODO: parse the expression for the return value
+        while self.current_token.type != TokenType.SEMICOLON:
+            self.next_token()
+
+        return statement
 
     def parse_let_statement(self) -> LetStatement:
         statement = LetStatement(self.current_token)
@@ -54,7 +68,7 @@ class Parser:
         statement.name = Identifier(self.current_token, self.current_token.literal)
         if not self.expect_peek(TokenType.ASSIGN):
             return None
-        # skip the expression for now
+        # TODO: parse the expression for the value
         while not self.current_token.type == TokenType.SEMICOLON:
             self.next_token()
         return statement

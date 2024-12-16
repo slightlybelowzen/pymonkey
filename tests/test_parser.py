@@ -1,6 +1,6 @@
 import pytest
 from src.parser import ParserError
-from src.ast import LetStatement, Program
+from src.ast import LetStatement, Program, ReturnStatement
 from contextlib import nullcontext as does_not_raise
 from src.lexer import Lexer
 from src.parser import Parser
@@ -25,6 +25,15 @@ def check_let_statement(
     return True
 
 
+def check_return_statement(ast: Program, expected_values: list[str]) -> bool:
+    assert len(ast.statements) == len(expected_values)
+    for _, statement in enumerate(ast.statements):
+        assert isinstance(statement, ReturnStatement)
+        assert statement.token_literal() == "return"
+        # assert statement.return_value.value == expected_values[i]
+    return True
+
+
 @pytest.mark.parametrize(
     "input, expected_identifiers, expected_values, expectation",
     [
@@ -44,3 +53,9 @@ def test_let_statements(
     with expectation:
         ast = input_to_ast(input)
         assert check_let_statement(ast, expected_identifiers, expected_values)
+
+
+def test_return_statements():
+    input = "return 5;"
+    ast = input_to_ast(input)
+    assert check_return_statement(ast, ["5"])
