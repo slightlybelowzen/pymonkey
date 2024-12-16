@@ -5,7 +5,8 @@ class Lexer():
         self.input: str = input
         self.position: int = 0
         self.read_position: int = 0
-        self.character: str | None = None
+        self.line: int = 0
+        self.character: str = "\0"
         self.input_len: int = 0
         self._post_init()
     
@@ -23,23 +24,22 @@ class Lexer():
             f")"
     
     def read_char(self) -> None:
-        self.peek_char()
+        self.character = self.peek_char()
         self.position = self.read_position
         self.read_position += 1
     
-    def peek_char(self) -> None:
+    def peek_char(self) -> str:
         if self.read_position >= self.input_len:
-            self.character = None
+            return "\0"
         else:
-            self.character = self.input[self.read_position]
+            return self.input[self.read_position]
     
     def next_token(self) -> Token:
         token = Token(TokenType.ILLEGAL, "", 0)
+        self.skip_whitespace()
         match self.character:
-            case None:
+            case "\0":
                 token = Token(TokenType.EOF, "", self.position) 
-            case "=":
-                token = Token(TokenType.ASSIGN, "=", self.position)
             case ",":
                 token = Token(TokenType.COMMA, ",", self.position)
             case "{":
@@ -56,7 +56,79 @@ class Lexer():
                 token = Token(TokenType.LPAREN, "(", self.position)
             case ")":
                 token = Token(TokenType.RPAREN, ")", self.position)
+            case "-":
+                token = Token(TokenType.MINUS, "-", self.position)
+            case "/":
+                token = Token(TokenType.SLASH, "/", self.position)
+            case "<":
+                token = Token(TokenType.LT, "<", self.position)
+            case ">":
+                token = Token(TokenType.GT, ">", self.position)
+            case "=":
+                token = self.match_peek_token("=", TokenType.EQ, TokenType.ASSIGN)
+            case "!":
+                token = self.match_peek_token("=", TokenType.NOT_EQ, TokenType.BANG)
+            case "\n":
+                self.line += 1
+            case '"': 
+                token.position = self.position
+                token.literal = self.read_string()
+                token.type = TokenType.STRING
+            case ch if ch.isalpha():
+                token.position = self.position
+                token.literal = self.read_identifier()
+                token.type = TokenType.lookup_keyword(token.literal)
+                return token
+            case ch if ch.isdigit():
+                token.position = self.position
+                token.literal = self.read_number()
+                token.type = TokenType.INT
+                return token
             case _:
                 pass
         self.read_char()
         return token
+    
+    def match_peek_token(self, expected_char: str, matched: TokenType, default: TokenType) -> Token:
+        if self.peek_char() == expected_char:
+            # Is there a cleaner way to do this?
+            character = self.character
+            position = self.position
+            self.read_char()
+            literal = character + self.character
+            return Token(matched, literal, position)
+        return Token(default, self.character, self.position)
+
+
+    def read_identifier(self) -> str:
+        start_position = self.position
+        while self.character.isalpha() or self.character == "_":
+            self.read_char()
+        return self.input[start_position:self.position]
+    
+    def read_string(self) -> str:
+        # skip opening "
+        self.read_char()
+        start_position = self.position
+        while self.character != '"':
+            # TODO: handle escape characters
+            # TODO: handle unterminated strings
+            # skip closing "
+            self.read_char()
+        return self.input[start_position:self.position]
+    
+    def read_number(self) -> int:
+        # TODO: handle floating point numbers
+        start_position = self.position
+        while self.character.isdigit():
+            self.read_char()
+        return int(self.input[start_position:self.position])
+    
+    def skip_whitespace(self) -> None:
+        while self.character.isspace():
+            match self.character:
+                case "\n":
+                    self.line += 1
+                case _:
+                    pass
+            self.read_char()
