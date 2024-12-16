@@ -13,7 +13,7 @@ class Node(ABC):
         return self.token.literal
 
     def __str__(self) -> str:
-        return f"Node(literal={self.token.literal.__repr__()}, type={self.token.type.value}, position={self.token.position}, line={self.token.line})"
+        return f"Node(literal={self.token.literal.__repr__()}, type={self.token.type.value})"
 
 
 @dataclass
@@ -49,8 +49,12 @@ class Program:
 class Identifier(Expression):
     value: str
 
+    @override
     def expression_node(self):
         return self
+
+    def __str__(self) -> str:
+        return f"Identifier(value={self.value.__repr__()})"
 
 
 @dataclass
@@ -85,3 +89,6 @@ class ExpressionStatement(Statement):
     @override
     def statement_node(self):
         pass
+
+    def __str__(self) -> str:
+        return f"ExpressionStatement(expression={self.expression})"

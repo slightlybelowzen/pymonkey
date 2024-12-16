@@ -1,6 +1,26 @@
-from src.ast import Identifier, LetStatement, Program, ReturnStatement, Statement
+from ast import Expression
+from collections.abc import Callable
+from enum import Enum
+from src.ast import (
+    ExpressionStatement,
+    Identifier,
+    LetStatement,
+    Program,
+    ReturnStatement,
+    Statement,
+)
 from src.lexer import Lexer
 from src.token import Token, TokenType
+
+
+class Precedence(Enum):
+    LOWEST = 1
+    EQUALS = 2
+    LESS_GREATER = 3
+    SUM = 4
+    PRODUCT = 5
+    PREFIX = 6
+    CALL = 7
 
 
 class ParserError(Exception):
@@ -14,7 +34,10 @@ class Parser:
         self.lexer = lexer
         self.current_token: Token | None = None
         self.peek_token: Token | None = None
-        self.errors: list[str] = []
+        self.prefix_parse_fns: dict[TokenType, Callable[[], Expression]] = {
+            TokenType.IDENT: self.parse_identifier,
+        }
+        self.infix_parse_fns: dict[TokenType, Callable[[Expression], Expression]] = {}
         self._post_init()
 
     def _post_init(self):
@@ -46,7 +69,31 @@ class Parser:
             case TokenType.RETURN:
                 return self.parse_return_statement()
             case _:
-                return None
+                return self.parse_expression_statement()
+
+    def parse_expression_statement(self) -> ExpressionStatement:
+        statement = ExpressionStatement(self.current_token)
+        statement.expression = self.parse_expression(Precedence.LOWEST)
+
+        assert self.peek_token is not None
+        if self.peek_token.type == TokenType.SEMICOLON:
+            self.next_token()
+
+        return statement
+
+    def parse_expression(self, precedence: Precedence) -> Expression:
+        assert self.current_token is not None
+        prefix = self.prefix_parse_fns.get(self.current_token.type, None)
+        if not prefix:
+            raise ParserError(f"no prefix parse function for {self.current_token.type}")
+        left_exp = prefix()
+
+        return left_exp
+
+    def parse_identifier(self) -> Expression:
+        assert self.current_token is not None
+        node = Identifier(token=self.current_token, value=self.current_token.literal)
+        return node
 
     def parse_return_statement(self) -> ReturnStatement:
         statement = ReturnStatement(self.current_token)

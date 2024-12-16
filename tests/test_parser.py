@@ -1,6 +1,12 @@
 import pytest
 from src.parser import ParserError
-from src.ast import LetStatement, Program, ReturnStatement
+from src.ast import (
+    ExpressionStatement,
+    Identifier,
+    LetStatement,
+    Program,
+    ReturnStatement,
+)
 from contextlib import nullcontext as does_not_raise
 from src.lexer import Lexer
 from src.parser import Parser
@@ -34,6 +40,15 @@ def check_return_statement(ast: Program, expected_values: list[str]) -> bool:
     return True
 
 
+def check_identifier_statements(ast: Program, expected_identifiers: list[str]) -> bool:
+    assert len(ast.statements) == len(expected_identifiers)
+    for i, statement in enumerate(ast.statements):
+        assert isinstance(statement, ExpressionStatement)
+        assert isinstance(statement.expression, Identifier)
+        assert statement.expression.value == expected_identifiers[i]
+    return True
+
+
 @pytest.mark.parametrize(
     "input, expected_identifiers, expected_values, expectation",
     [
@@ -55,7 +70,35 @@ def test_let_statements(
         assert check_let_statement(ast, expected_identifiers, expected_values)
 
 
-def test_return_statements():
-    input = "return 5;"
-    ast = input_to_ast(input)
-    assert check_return_statement(ast, ["5"])
+@pytest.mark.parametrize(
+    "input, expected_values, expectation",
+    [
+        ("return 5;", ["5"], does_not_raise()),
+        ("return 5; return 10;", ["5", "10"], does_not_raise()),
+    ],
+)
+def test_return_statements(
+    input: str,
+    expected_values: list[str],
+    expectation,  # type: ignore
+):
+    with expectation:
+        ast = input_to_ast(input)
+        assert check_return_statement(ast, expected_values)
+
+
+@pytest.mark.parametrize(
+    "input, expected_identifiers, expectation",
+    [
+        ("foobar;", ["foobar"], does_not_raise()),
+        ("x;", ["x"], does_not_raise()),
+    ],
+)
+def test_identifier_expressions(
+    input: str,
+    expected_identifiers: list[str],
+    expectation,  # type: ignore
+):
+    with expectation:
+        ast = input_to_ast(input)
+        assert check_identifier_statements(ast, expected_identifiers)

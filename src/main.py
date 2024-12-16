@@ -26,7 +26,7 @@ def run_interpreter():
 
 def main():
     args = sys.argv[1:]
-    if args == []:
+    if not args:
         run_interpreter()
     file = args[0]
     with open(file, "r") as f:
