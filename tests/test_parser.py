@@ -3,6 +3,7 @@ from src.parser import ParserError
 from src.ast import (
     ExpressionStatement,
     Identifier,
+    InfixExpression,
     IntegerLiteral,
     LetStatement,
     PrefixExpression,
@@ -12,6 +13,9 @@ from src.ast import (
 from contextlib import nullcontext as does_not_raise
 from src.lexer import Lexer
 from src.parser import Parser
+
+# TODO: add more tests that don't take the happy path
+# TODO: need to make sure the parser handles errors and edge cases
 
 
 def input_to_ast(input: str) -> Program:
@@ -64,12 +68,27 @@ def check_prefix_expressions(
     ast: Program, expected_operator: str, expected_value: int
 ) -> bool:
     assert len(ast.statements) == 1
-    print(ast)
     for statement in ast.statements:
         assert isinstance(statement, ExpressionStatement)
         assert isinstance(statement.expression, PrefixExpression)
         assert statement.expression.operator == expected_operator
         assert statement.expression.right.token_literal() == expected_value
+    return True
+
+
+def check_infix_expressions(
+    ast: Program,
+    left_expression: int,
+    expected_operator: str,
+    right_expression: int,
+) -> bool:
+    assert len(ast.statements) == 1
+    for statement in ast.statements:
+        assert isinstance(statement, ExpressionStatement)
+        assert isinstance(statement.expression, InfixExpression)
+        assert statement.expression.left.token_literal() == left_expression
+        assert statement.expression.operator == expected_operator
+        assert statement.expression.right.token_literal() == right_expression
     return True
 
 
@@ -161,3 +180,30 @@ def test_prefix_expressions(
     with expectation:
         ast = input_to_ast(input)
         assert check_prefix_expressions(ast, expected_operator, expected_value)
+
+
+@pytest.mark.parametrize(
+    "input, left_expression, expected_operator, right_expression, expectation",
+    [
+        ("5 + 5;", 5, "+", 5, does_not_raise()),
+        ("5 - 5;", 5, "-", 5, does_not_raise()),
+        ("5 * 5;", 5, "*", 5, does_not_raise()),
+        ("5 / 5;", 5, "/", 5, does_not_raise()),
+        ("5 > 5;", 5, ">", 5, does_not_raise()),
+        ("5 < 5;", 5, "<", 5, does_not_raise()),
+        ("5 == 5;", 5, "==", 5, does_not_raise()),
+        ("5 != 5;", 5, "!=", 5, does_not_raise()),
+    ],
+)
+def test_infix_expressions(
+    input: str,
+    left_expression: int,
+    expected_operator: str,
+    right_expression: int,
+    expectation,  # type: ignore
+):
+    with expectation:
+        ast = input_to_ast(input)
+        assert check_infix_expressions(
+            ast, left_expression, expected_operator, right_expression
+        )

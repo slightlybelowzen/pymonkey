@@ -4,6 +4,7 @@ from enum import Enum
 from src.ast import (
     ExpressionStatement,
     Identifier,
+    InfixExpression,
     IntegerLiteral,
     LetStatement,
     PrefixExpression,
@@ -36,13 +37,35 @@ class Parser:
         self.lexer = lexer
         self.current_token: Token | None = None
         self.peek_token: Token | None = None
+
+        # Add precedence mapping
+        self.precedences: dict[TokenType, Precedence] = {
+            TokenType.EQ: Precedence.EQUALS,
+            TokenType.NOT_EQ: Precedence.EQUALS,
+            TokenType.LT: Precedence.LESS_GREATER,
+            TokenType.GT: Precedence.LESS_GREATER,
+            TokenType.PLUS: Precedence.SUM,
+            TokenType.MINUS: Precedence.SUM,
+            TokenType.SLASH: Precedence.PRODUCT,
+            TokenType.ASTERISK: Precedence.PRODUCT,
+        }
+
         self.prefix_parse_fns: dict[TokenType, Callable[[], Expression]] = {
             TokenType.IDENT: self.parse_identifier,
             TokenType.INT: self.parse_integet_literal,
             TokenType.BANG: self.parse_prefix_expression,
             TokenType.MINUS: self.parse_prefix_expression,
         }
-        self.infix_parse_fns: dict[TokenType, Callable[[Expression], Expression]] = {}
+        self.infix_parse_fns: dict[TokenType, Callable[[Expression], Expression]] = {
+            TokenType.PLUS: self.parse_infix_expression,
+            TokenType.MINUS: self.parse_infix_expression,
+            TokenType.SLASH: self.parse_infix_expression,
+            TokenType.ASTERISK: self.parse_infix_expression,
+            TokenType.EQ: self.parse_infix_expression,
+            TokenType.NOT_EQ: self.parse_infix_expression,
+            TokenType.LT: self.parse_infix_expression,
+            TokenType.GT: self.parse_infix_expression,
+        }
         self._post_init()
 
     def _post_init(self):
@@ -93,6 +116,18 @@ class Parser:
             raise ParserError(f"no prefix parse function for {self.current_token.type}")
         left_exp = prefix()
 
+        while (
+            self.peek_token is not None
+            and self.peek_token.type == TokenType.SEMICOLON
+            and precedence.value < self.peek_precedence().value
+        ):
+            infix = self.infix_parse_fns.get(self.peek_token.type, None)
+            if not infix:
+                return left_exp
+
+            self.next_token()
+            left_exp = infix(left_exp)
+
         return left_exp
 
     def parse_identifier(self) -> Expression:
@@ -118,6 +153,18 @@ class Parser:
         )
         self.next_token()
         expression.right = self.parse_expression(Precedence.PREFIX)
+        return expression
+
+    def parse_infix_expression(self, left: Expression) -> Expression:
+        assert self.current_token is not None
+        expression = InfixExpression(
+            token=self.current_token,
+            operator=self.current_token.literal,
+            left=left,
+        )
+        precedence = self.current_precedence()
+        self.next_token()
+        expression.right = self.parse_expression(precedence)
         return expression
 
     def parse_return_statement(self) -> ReturnStatement:
@@ -154,3 +201,11 @@ class Parser:
             )
         self.next_token()
         return True
+
+    def peek_precedence(self) -> Precedence:
+        assert self.peek_token is not None
+        return self.precedences.get(self.peek_token.type, Precedence.LOWEST)
+
+    def current_precedence(self) -> Precedence:
+        assert self.current_token is not None
+        return self.precedences.get(self.current_token.type, Precedence.LOWEST)

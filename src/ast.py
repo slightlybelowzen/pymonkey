@@ -108,7 +108,7 @@ class IntegerLiteral(Expression):
 
 @dataclass
 class PrefixExpression(Expression):
-    operator: Token = None
+    operator: str
     right: Expression = None
 
     @override
@@ -117,3 +117,17 @@ class PrefixExpression(Expression):
 
     def __str__(self) -> str:
         return f"PrefixExpression(operator={self.operator}, right={self.right})"
+
+
+@dataclass
+class InfixExpression(Expression):
+    operator: str
+    left: Expression = None
+    right: Expression = None
+
+    @override
+    def expression_node(self):
+        return self
+
+    def __str__(self) -> str:
+        return f"InfixExpression(left={self.left}, operator={self.operator}, right={self.right})"
