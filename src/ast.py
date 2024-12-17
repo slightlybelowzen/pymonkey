@@ -104,3 +104,16 @@ class IntegerLiteral(Expression):
 
     def __str__(self) -> str:
         return f"IntegerLiteral(value={self.value.__repr__()})"
+
+
+@dataclass
+class PrefixExpression(Expression):
+    operator: Token = None
+    right: Expression = None
+
+    @override
+    def expression_node(self):
+        return self
+
+    def __str__(self) -> str:
+        return f"PrefixExpression(operator={self.operator}, right={self.right})"

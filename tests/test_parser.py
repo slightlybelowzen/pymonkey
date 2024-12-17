@@ -5,6 +5,7 @@ from src.ast import (
     Identifier,
     IntegerLiteral,
     LetStatement,
+    PrefixExpression,
     Program,
     ReturnStatement,
 )
@@ -56,6 +57,19 @@ def check_integer_literal_statements(ast: Program, expected_values: list[str]) -
         assert isinstance(statement, ExpressionStatement)
         assert isinstance(statement.expression, IntegerLiteral)
         assert statement.expression.value == int(expected_values[i])
+    return True
+
+
+def check_prefix_expressions(
+    ast: Program, expected_operator: str, expected_value: int
+) -> bool:
+    assert len(ast.statements) == 1
+    print(ast)
+    for statement in ast.statements:
+        assert isinstance(statement, ExpressionStatement)
+        assert isinstance(statement.expression, PrefixExpression)
+        assert statement.expression.operator == expected_operator
+        assert statement.expression.right.token_literal() == expected_value
     return True
 
 
@@ -129,3 +143,21 @@ def test_integer_literal_expressions(
     with expectation:
         ast = input_to_ast(input)
         assert check_integer_literal_statements(ast, expected_values)
+
+
+@pytest.mark.parametrize(
+    "input, expected_operator, expected_value, expectation",
+    [
+        ("!5;", "!", 5, does_not_raise()),
+        ("-15;", "-", 15, does_not_raise()),
+    ],
+)
+def test_prefix_expressions(
+    input: str,
+    expected_operator: str,
+    expected_value: int,
+    expectation,  # type: ignore
+):
+    with expectation:
+        ast = input_to_ast(input)
+        assert check_prefix_expressions(ast, expected_operator, expected_value)

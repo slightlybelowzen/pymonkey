@@ -6,6 +6,7 @@ from src.ast import (
     Identifier,
     IntegerLiteral,
     LetStatement,
+    PrefixExpression,
     Program,
     ReturnStatement,
     Statement,
@@ -38,6 +39,8 @@ class Parser:
         self.prefix_parse_fns: dict[TokenType, Callable[[], Expression]] = {
             TokenType.IDENT: self.parse_identifier,
             TokenType.INT: self.parse_integet_literal,
+            TokenType.BANG: self.parse_prefix_expression,
+            TokenType.MINUS: self.parse_prefix_expression,
         }
         self.infix_parse_fns: dict[TokenType, Callable[[Expression], Expression]] = {}
         self._post_init()
@@ -107,6 +110,15 @@ class Parser:
             )
         literal = IntegerLiteral(token=self.current_token, value=value)
         return literal
+
+    def parse_prefix_expression(self) -> Expression:
+        assert self.current_token is not None
+        expression = PrefixExpression(
+            token=self.current_token, operator=self.current_token.literal
+        )
+        self.next_token()
+        expression.right = self.parse_expression(Precedence.PREFIX)
+        return expression
 
     def parse_return_statement(self) -> ReturnStatement:
         statement = ReturnStatement(self.current_token)
