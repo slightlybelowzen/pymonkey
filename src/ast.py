@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import override
 
 from src.token import Token
 
@@ -10,6 +9,7 @@ class Node(ABC):
     token: Token
 
     def token_literal(self) -> str:
+        assert self.token.literal is not None
         return self.token.literal
 
     def __str__(self) -> str:
@@ -49,7 +49,6 @@ class Program:
 class Identifier(Expression):
     value: str
 
-    @override
     def expression_node(self):
         return self
 
@@ -62,7 +61,6 @@ class LetStatement(Statement):
     name: Identifier = None
     value: Expression = None
 
-    @override
     def statement_node(self):
         pass
 
@@ -74,7 +72,6 @@ class LetStatement(Statement):
 class ReturnStatement(Statement):
     return_value: Expression = None
 
-    @override
     def statement_node(self):
         pass
 
@@ -86,7 +83,6 @@ class ReturnStatement(Statement):
 class ExpressionStatement(Statement):
     expression: Expression = None
 
-    @override
     def statement_node(self):
         pass
 
@@ -98,7 +94,6 @@ class ExpressionStatement(Statement):
 class IntegerLiteral(Expression):
     value: int
 
-    @override
     def expression_node(self):
         return self
 
@@ -111,7 +106,6 @@ class PrefixExpression(Expression):
     operator: str
     right: Expression = None
 
-    @override
     def expression_node(self):
         return self
 
@@ -125,7 +119,6 @@ class InfixExpression(Expression):
     left: Expression = None
     right: Expression = None
 
-    @override
     def expression_node(self):
         return self
 
