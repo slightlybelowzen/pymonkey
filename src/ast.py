@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
@@ -19,14 +20,14 @@ class Node(ABC):
 @dataclass
 class Statement(Node):
     @abstractmethod
-    def statement_node(self):
+    def statement_node(self) -> Statement:
         pass
 
 
 @dataclass
 class Expression(Node):
     @abstractmethod
-    def expression_node(self):
+    def expression_node(self) -> Expression:
         pass
 
 
@@ -58,11 +59,11 @@ class Identifier(Expression):
 
 @dataclass
 class LetStatement(Statement):
-    name: Identifier = None
-    value: Expression = None
+    name: Identifier | None = None
+    value: Expression | None = None
 
     def statement_node(self):
-        pass
+        return self
 
     def __str__(self) -> str:
         return f"LetStatement(name={self.name}, value={self.value})"
@@ -70,10 +71,10 @@ class LetStatement(Statement):
 
 @dataclass
 class ReturnStatement(Statement):
-    return_value: Expression = None
+    return_value: Expression | None = None
 
     def statement_node(self):
-        pass
+        return self
 
     def __str__(self) -> str:
         return f"ReturnStatement(return_value={self.return_value})"
@@ -81,10 +82,10 @@ class ReturnStatement(Statement):
 
 @dataclass
 class ExpressionStatement(Statement):
-    expression: Expression = None
+    expression: Expression | None = None
 
     def statement_node(self):
-        pass
+        return self
 
     def __str__(self) -> str:
         return f"ExpressionStatement(expression={self.expression})"
@@ -104,7 +105,7 @@ class IntegerLiteral(Expression):
 @dataclass
 class PrefixExpression(Expression):
     operator: str
-    right: Expression = None
+    right: Expression | None = None
 
     def expression_node(self):
         return self
@@ -116,8 +117,8 @@ class PrefixExpression(Expression):
 @dataclass
 class InfixExpression(Expression):
     operator: str
-    left: Expression = None
-    right: Expression = None
+    left: Expression | None = None
+    right: Expression | None = None
 
     def expression_node(self):
         return self
