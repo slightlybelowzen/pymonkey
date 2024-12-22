@@ -38,7 +38,7 @@ class Lexer:
             return self.input[self.read_position]
 
     def next_token(self) -> Token:
-        token = Token(TokenType.ILLEGAL, "", 0)
+        token = Token(TokenType.ILLEGAL, "", 0, 0)
         self.skip_whitespace()
         match self.character:
             case "\0":
@@ -124,12 +124,12 @@ class Lexer:
             self.read_char()
         return self.input[start_position : self.position]
 
-    def read_number(self) -> int:
+    def read_number(self) -> str:
         # TODO: handle floating point numbers
         start_position = self.position
         while self.character.isdigit():
             self.read_char()
-        return int(self.input[start_position : self.position])
+        return self.input[start_position : self.position]
 
     def skip_whitespace(self) -> None:
         while self.character.isspace():

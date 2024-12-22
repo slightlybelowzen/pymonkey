@@ -47,12 +47,12 @@ let result = add(five, ten);"""
         Token(type=TokenType.LET, literal="let", position=0, line=0),
         Token(type=TokenType.IDENT, literal="five", position=4, line=0),
         Token(type=TokenType.ASSIGN, literal="=", position=9, line=0),
-        Token(type=TokenType.INT, literal=5, position=11, line=0),
+        Token(type=TokenType.INT, literal="5", position=11, line=0),
         Token(type=TokenType.SEMICOLON, literal=";", position=12, line=0),
         Token(type=TokenType.LET, literal="let", position=14, line=1),
         Token(type=TokenType.IDENT, literal="ten", position=18, line=1),
         Token(type=TokenType.ASSIGN, literal="=", position=22, line=1),
-        Token(type=TokenType.INT, literal=10, position=24, line=1),
+        Token(type=TokenType.INT, literal="10", position=24, line=1),
         Token(type=TokenType.SEMICOLON, literal=";", position=26, line=1),
         Token(type=TokenType.LET, literal="let", position=28, line=2),
         Token(type=TokenType.IDENT, literal="add", position=32, line=2),
@@ -89,13 +89,13 @@ def test_operators():
         Token(type=TokenType.MINUS, literal="-", position=1),
         Token(type=TokenType.SLASH, literal="/", position=2),
         Token(type=TokenType.ASTERISK, literal="*", position=3),
-        Token(type=TokenType.INT, literal=5, position=4),
+        Token(type=TokenType.INT, literal="5", position=4),
         Token(type=TokenType.SEMICOLON, literal=";", position=5),
-        Token(type=TokenType.INT, literal=5, position=7),
+        Token(type=TokenType.INT, literal="5", position=7),
         Token(type=TokenType.LT, literal="<", position=9),
-        Token(type=TokenType.INT, literal=10, position=11),
+        Token(type=TokenType.INT, literal="10", position=11),
         Token(type=TokenType.GT, literal=">", position=14),
-        Token(type=TokenType.INT, literal=5, position=16),
+        Token(type=TokenType.INT, literal="5", position=16),
         Token(type=TokenType.SEMICOLON, literal=";", position=17),
     ]
 
@@ -105,9 +105,9 @@ def test_if_statements():
     assert input_to_tokens(input) == [
         Token(type=TokenType.IF, literal="if", position=0),
         Token(type=TokenType.LPAREN, literal="(", position=3),
-        Token(type=TokenType.INT, literal=5, position=4),
+        Token(type=TokenType.INT, literal="5", position=4),
         Token(type=TokenType.LT, literal="<", position=6),
-        Token(type=TokenType.INT, literal=10, position=8),
+        Token(type=TokenType.INT, literal="10", position=8),
         Token(type=TokenType.RPAREN, literal=")", position=10),
         Token(type=TokenType.LBRACE, literal="{", position=12),
         Token(type=TokenType.RETURN, literal="return", position=14),
@@ -133,7 +133,7 @@ def test_string_literals():
 
 def test_equality_operators():
     assert input_to_tokens("5 != 5") == [
-        Token(type=TokenType.INT, literal=5, position=0),
+        Token(type=TokenType.INT, literal="5", position=0),
         Token(type=TokenType.NOT_EQ, literal="!=", position=2),
-        Token(type=TokenType.INT, literal=5, position=5),
+        Token(type=TokenType.INT, literal="5", position=5),
     ]

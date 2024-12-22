@@ -59,8 +59,8 @@ class Identifier(Expression):
 
 @dataclass
 class LetStatement(Statement):
-    name: Identifier | None = None
-    value: Expression | None = None
+    name: Identifier
+    value: Expression
 
     def statement_node(self):
         return self
@@ -71,7 +71,7 @@ class LetStatement(Statement):
 
 @dataclass
 class ReturnStatement(Statement):
-    return_value: Expression | None = None
+    return_value: Expression
 
     def statement_node(self):
         return self
@@ -82,7 +82,7 @@ class ReturnStatement(Statement):
 
 @dataclass
 class ExpressionStatement(Statement):
-    expression: Expression | None = None
+    expression: Expression
 
     def statement_node(self):
         return self
@@ -105,7 +105,7 @@ class IntegerLiteral(Expression):
 @dataclass
 class PrefixExpression(Expression):
     operator: str
-    right: Expression | None = None
+    right: Expression
 
     def expression_node(self):
         return self
@@ -117,8 +117,8 @@ class PrefixExpression(Expression):
 @dataclass
 class InfixExpression(Expression):
     operator: str
-    left: Expression | None = None
-    right: Expression | None = None
+    left: Expression
+    right: Expression
 
     def expression_node(self):
         return self

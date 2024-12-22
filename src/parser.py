@@ -1,5 +1,6 @@
-from typing import Callable
 from enum import Enum
+from typing import Callable
+
 from src.ast import (
     Expression,
     ExpressionStatement,
@@ -133,13 +134,11 @@ class Parser:
 
     def parse_identifier(self) -> Expression:
         assert self.current_token is not None
-        assert self.current_token.literal is not None
         node = Identifier(token=self.current_token, value=self.current_token.literal)
         return node
 
     def parse_integet_literal(self) -> Expression:
         assert self.current_token is not None
-        assert self.current_token.literal is not None
         try:
             value = int(self.current_token.literal)
         except ValueError:
@@ -151,7 +150,6 @@ class Parser:
 
     def parse_prefix_expression(self) -> Expression:
         assert self.current_token is not None
-        assert self.current_token.literal is not None
         expression = PrefixExpression(
             token=self.current_token, operator=self.current_token.literal
         )
@@ -162,7 +160,6 @@ class Parser:
     def parse_infix_expression(self, left: Expression) -> Expression:
         assert self.current_token is not None
 
-        assert self.current_token.literal is not None
         expression = InfixExpression(
             token=self.current_token,
             operator=self.current_token.literal,
@@ -192,7 +189,6 @@ class Parser:
         if not self.expect_peek(TokenType.IDENT):
             return None
         assert self.current_token is not None
-        assert self.current_token.literal is not None
         statement.name = Identifier(self.current_token, self.current_token.literal)
         if not self.expect_peek(TokenType.ASSIGN):
             return None

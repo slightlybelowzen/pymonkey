@@ -68,6 +68,6 @@ class TokenType(Enum):
 @dataclass
 class Token:
     type: TokenType
-    literal: str | None = None
+    literal: str
     position: int = 0
     line: int = 0
