@@ -2,8 +2,8 @@ from src.token import Token, TokenType
 
 
 class Lexer:
-    def __init__(self, input: str) -> None:
-        self.input: str = input
+    def __init__(self, inp: str) -> None:
+        self.input: str = inp
         self.position: int = 0
         self.read_position: int = 0
         self.line: int = 0

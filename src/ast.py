@@ -48,7 +48,7 @@ class Program:
 
 @dataclass
 class Identifier(Expression):
-    value: str
+    value: str = None
 
     def expression_node(self):
         return self
@@ -59,8 +59,8 @@ class Identifier(Expression):
 
 @dataclass
 class LetStatement(Statement):
-    name: Identifier
-    value: Expression
+    name: Identifier = None
+    value: Expression = None
 
     def statement_node(self):
         return self
@@ -71,7 +71,7 @@ class LetStatement(Statement):
 
 @dataclass
 class ReturnStatement(Statement):
-    return_value: Expression
+    return_value: Expression = None
 
     def statement_node(self):
         return self
@@ -82,7 +82,7 @@ class ReturnStatement(Statement):
 
 @dataclass
 class ExpressionStatement(Statement):
-    expression: Expression
+    expression: Expression = None
 
     def statement_node(self):
         return self
@@ -93,7 +93,7 @@ class ExpressionStatement(Statement):
 
 @dataclass
 class IntegerLiteral(Expression):
-    value: int
+    value: int = None
 
     def expression_node(self):
         return self
@@ -104,8 +104,8 @@ class IntegerLiteral(Expression):
 
 @dataclass
 class PrefixExpression(Expression):
-    operator: str
-    right: Expression
+    operator: str = None
+    right: Expression = None
 
     def expression_node(self):
         return self
@@ -116,9 +116,9 @@ class PrefixExpression(Expression):
 
 @dataclass
 class InfixExpression(Expression):
-    operator: str
-    left: Expression
-    right: Expression
+    operator: str = None
+    left: Expression = None
+    right: Expression = None
 
     def expression_node(self):
         return self

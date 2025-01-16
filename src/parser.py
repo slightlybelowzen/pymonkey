@@ -57,6 +57,7 @@ class Parser:
             TokenType.BANG: self.parse_prefix_expression,
             TokenType.MINUS: self.parse_prefix_expression,
         }
+        # TODO: why aren't these being registered and called when we parse the infix expressions?
         self.infix_parse_fns: dict[TokenType, Callable[[Expression], Expression]] = {
             TokenType.PLUS: self.parse_infix_expression,
             TokenType.MINUS: self.parse_infix_expression,

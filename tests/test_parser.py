@@ -167,8 +167,8 @@ def test_integer_literal_expressions(
 @pytest.mark.parametrize(
     "input, expected_operator, expected_value, expectation",
     [
-        ("!5;", "!", 5, does_not_raise()),
-        ("-15;", "-", 15, does_not_raise()),
+        ("!5;", "!", "5", does_not_raise()),
+        ("-15;", "-", "15", does_not_raise()),
     ],
 )
 def test_prefix_expressions(
@@ -185,21 +185,21 @@ def test_prefix_expressions(
 @pytest.mark.parametrize(
     "input, left_expression, expected_operator, right_expression, expectation",
     [
-        ("5 + 5;", 5, "+", 5, does_not_raise()),
-        ("5 - 5;", 5, "-", 5, does_not_raise()),
-        ("5 * 5;", 5, "*", 5, does_not_raise()),
-        ("5 / 5;", 5, "/", 5, does_not_raise()),
-        ("5 > 5;", 5, ">", 5, does_not_raise()),
-        ("5 < 5;", 5, "<", 5, does_not_raise()),
-        ("5 == 5;", 5, "==", 5, does_not_raise()),
-        ("5 != 5;", 5, "!=", 5, does_not_raise()),
+        ("5 + 5;", "5", "+", "5", does_not_raise()),
+        ("5 - 5;", "5", "-", "5", does_not_raise()),
+        ("5 * 5;", "5", "*", "5", does_not_raise()),
+        ("5 / 5;", "5", "/", "5", does_not_raise()),
+        ("5 > 5;", "5", ">", "5", does_not_raise()),
+        ("5 < 5;", "5", "<", "5", does_not_raise()),
+        ("5 == 5;", "5", "==", "5", does_not_raise()),
+        ("5 != 5;", "5", "!=", "5", does_not_raise()),
     ],
 )
 def test_infix_expressions(
     input: str,
-    left_expression: int,
+    left_expression: str,
     expected_operator: str,
-    right_expression: int,
+    right_expression: str,
     expectation,  # type: ignore
 ):
     with expectation:
